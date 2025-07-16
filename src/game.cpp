@@ -53,12 +53,12 @@ bool Game::isBoardFull() {
 }
 
 void Game::render() {
-    std::cout << "Game rendered!" << std::endl;
+    //std::cout << "Game rendered!" << std::endl;
     // Render game graphics here
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
-            std::cout << board[i][j];
-            if (j < 2) std::cout << "  |";
+            std::cout << ' ' << board[i][j] << ' ';
+            if (j < 2) std::cout << "|";
         }
         std::cout << std::endl;
         if (i < 2) std::cout << "---+---+---" << std::endl;
@@ -73,4 +73,12 @@ bool Game::makeMove(int row, int col) {
     board[row][col] = currentPlayer;
     currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
     return true;
+}
+
+char Game::getCurrentPlayer() const {
+    return currentPlayer;
+}
+
+bool Game::isCellEmpty(int row, int col) const {
+    return board[row][col] == ' ';
 }

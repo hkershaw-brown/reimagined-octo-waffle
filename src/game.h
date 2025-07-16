@@ -8,6 +8,8 @@ public:
     void render();
     bool makeMove(int row, int col);
     bool gameOver;
+    char getCurrentPlayer() const;
+    bool isCellEmpty(int row, int col) const;
 
 private:
     // Game state and resources
