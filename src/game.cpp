@@ -1,84 +1,66 @@
 #include "game.h"
 #include <iostream>
+#include <string>
+#include <cstring>
 
-void Game::start() {
-    std::cout << "Game started!" << std::endl;
-    // Initialize game state and resources here
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            board[i][j] = ' '; // Initialize Tic-Tac-Toe board
-        }
-    }
-    currentPlayer = 'X'; // Start with player X
-    gameOver = false; // Game is not over at the start
-}
+extern "C" {
+    char board[3][3];
+    char currentPlayer = 'X';
+    bool gameOver = false;
 
-void Game::update() {
-    // Check for a win or draw after each move
-    if (checkWin('X')) {
-        std::cout << "Player X wins!" << std::endl;
-        gameOver = true;
-    } else if (checkWin('O')) {
-        std::cout << "Player O wins!" << std::endl;
-        gameOver = true;
-    } else if (isBoardFull()) {
-        std::cout << "It's a draw!" << std::endl;
-        gameOver = true;
+    void resetGame() {
+        for (int i = 0; i < 3; ++i)
+            for (int j = 0; j < 3; ++j)
+                board[i][j] = ' ';
+        currentPlayer = 'X';
+        gameOver = false;
     }
-}
 
-bool Game::checkWin(char player) {
-    // Check rows, columns, and diagonals for a win
-    for (int i = 0; i < 3; ++i) {
-        if ((board[i][0] == player && board[i][1] == player && board[i][2] == player) || // Rows
-            (board[0][i] == player && board[1][i] == player && board[2][i] == player)) { // Columns
-            return true;
-        }
-    }
-    // Diagonals
-    if ((board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
-        (board[0][2] == player && board[1][1] == player && board[2][0] == player)) {
+    bool makeMove(int row, int col) {
+        if (gameOver) return false;
+        if (row < 0 || row > 2 || col < 0 || col > 2) return false;
+        if (board[row][col] != ' ') return false;
+        board[row][col] = currentPlayer;
+        // Check win
+        for (int i = 0; i < 3; ++i)
+            if ((board[i][0] == currentPlayer && board[i][1] == currentPlayer && board[i][2] == currentPlayer) ||
+                (board[0][i] == currentPlayer && board[1][i] == currentPlayer && board[2][i] == currentPlayer))
+                gameOver = true;
+        if ((board[0][0] == currentPlayer && board[1][1] == currentPlayer && board[2][2] == currentPlayer) ||
+            (board[0][2] == currentPlayer && board[1][1] == currentPlayer && board[2][0] == currentPlayer))
+            gameOver = true;
+        // Check draw
+        bool full = true;
+        for (int i = 0; i < 3; ++i)
+            for (int j = 0; j < 3; ++j)
+                if (board[i][j] == ' ') full = false;
+        if (full && !gameOver) gameOver = true;
+        if (!gameOver)
+            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
         return true;
     }
-    return false;
-}
-bool Game::isBoardFull() {
-    // Check if the board is full
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            if (board[i][j] == ' ') return false; // Found an empty cell
+
+    const char* getBoard() {
+        //return "hello from C++";
+        static std::string out;
+        out.clear();
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                out += board[i][j];
+                if (j < 2) out += "  | ";
+            }
+            out += "\r\n";
+            if (i < 2) out += "---+---+---\r\n";
         }
+        return out.c_str();
+        
     }
-    return true; // No empty cells found
-}
 
-void Game::render() {
-    //std::cout << "Game rendered!" << std::endl;
-    // Render game graphics here
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            std::cout << ' ' << board[i][j] << ' ';
-            if (j < 2) std::cout << "|";
-        }
-        std::cout << std::endl;
-        if (i < 2) std::cout << "---+---+---" << std::endl;
+    char getCurrentPlayer() {
+        return currentPlayer;
     }
-}
 
-bool Game::makeMove(int row, int col) {
-    // Check if the move is within bounds and the cell is empty
-    if (row < 0 || row > 2 || col < 0 || col > 2) return false;
-    if (board[row][col] != ' ') return false;
-
-    board[row][col] = currentPlayer;
-    currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
-    return true;
-}
-
-char Game::getCurrentPlayer() const {
-    return currentPlayer;
-}
-
-bool Game::isCellEmpty(int row, int col) const {
-    return board[row][col] == ' ';
+    bool isGameOver() {
+        return gameOver;
+    }
 }

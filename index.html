@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+  <script>
+    // Define Module BEFORE loading game.js
+    var Module = {
+      onRuntimeInitialized: function() {
+        const term = new Terminal();
+        term.open(document.getElementById('terminal'));
+
+        const makeMove = Module.cwrap('makeMove', null, ['number', 'number']);
+        const getBoard = Module.cwrap('getBoard', 'string', []);
+        const resetGame = Module.cwrap('resetGame', null, []);
+
+        term.writeln('Welcome to Tic Tac Toe!');
+        resetGame();
+        
+        function renderBoard() {
+          term.clear();
+          term.writeln(getBoard());
+        }
+
+        renderBoard();
+        term.prompt = () => term.write('Enter your move\r\n> ');
+
+        let input = '';
+        term.prompt();
+
+        term.onData(e => {
+          if (e === '\r') {
+            let parts = input.split(/[ ,]+/);
+            if (parts.length === 2) {
+              let row = parseInt(parts[0]);
+              let col = parseInt(parts[1]);
+              makeMove(row, col);
+              renderBoard();
+            } else {
+              renderBoard();
+              term.writeln('Invalid input. Use: row,col');
+            }
+            input = '';
+            renderBoard();
+            term.prompt();
+          } else if (e === '\u007F') {
+            if (input.length > 0) {
+              input = input.slice(0, -1);
+              term.write('\b \b');
+            }
+          } else {
+            input += e;
+            term.write(e);
+          }
+        });
+      }
+    };
+  </script>
+  <script src="game.js"></script>
+</head>
+<body>
+  <div id="terminal" style="width:600px;height:300px;"></div>
+</body>
+</html>
