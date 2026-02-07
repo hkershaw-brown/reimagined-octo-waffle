@@ -1,6 +1,8 @@
 #include "game.h"
 #include <iostream>
 #include <string>
+#include <cstdlib>
+#include <ctime>
 
 static std::string boardStr;
 
@@ -14,6 +16,7 @@ void Game::start() {
     }
     currentPlayer = 'X'; // Start with player X
     gameOver = false; // Game is not over at the start
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
 void Game::update() {
@@ -124,6 +127,7 @@ const char* getBoard(void* game) {
     Game* g = static_cast<Game*>(game);
     boardStr.clear();
     for (int i = 0; i < 3; ++i) {
+        boardStr += " "; // Add space at the start of the row
         for (int j = 0; j < 3; ++j) {
             boardStr += g->isCellEmpty(i, j) ? ' ' : g->board[i][j];
             if (j < 2) boardStr += " | ";
