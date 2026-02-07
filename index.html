@@ -17,6 +17,7 @@
         const makeComputerMove = Module.cwrap('makeComputerMove', 'bool', ['number']);
         const getStatus = Module.cwrap('getStatus', 'string', ['number']);
 
+
         // Create a game instance
         let gamePtr = createGame();
         resetGame(gamePtr);
@@ -28,7 +29,7 @@
           term.clear();
           term.writeln(getBoard(gamePtr));
           let status = getStatus(gamePtr) || "";
-          console.log('Status:', status);
+          //console.log('Status:', status);
           if (status.length > 0) {
             term.writeln(status);
           } else if (statusMsg) {
