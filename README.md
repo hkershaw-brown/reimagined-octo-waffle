@@ -1,13 +1,14 @@
 # cpp-game-project
 
 ## Overview
-This project is a simple game developed in C++. It serves as a learning exercise to understand the basics of game development, including game loops, user input handling, and rendering graphics.
+Noughts and crosses (aka tic-tac-toe). C++ and a webassembly version
 
 ## Project Structure
 ```
 cpp-game-project
+├── index.html          # for the web assmebly version
 ├── src
-│   ├── main.cpp        # Entry point of the game
+│   ├── main.cpp        # Entry point of the game C++
 │   ├── game.cpp        # Implementation of the Game class
 │   └── game.h          # Declaration of the Game class
 ├── include
@@ -16,36 +17,36 @@ cpp-game-project
 └── README.md           # Project documentation
 ```
 
-## Building the Project
-To build the project, you need to have CMake installed. Follow these steps:
+## C++ version
+Use cmake to build:
 
-1. Open a terminal and navigate to the project directory.
-2. Create a build directory:
-   ```
-   mkdir build
-   cd build
-   ```
-3. Run CMake to configure the project:
-   ```
-   cmake ..
-   ```
-4. Compile the project:
-   ```
-   make
-   ```
+```
+cmake -S . -B build
+cmake --build build
+```
 
-## Running the Game
-After building the project, you can run the game by executing the generated binary in the build directory.
+Run with:
 
-## Features
-- Game loop management
-- User input handling
-- Basic rendering capabilities
+```
+build/tictactoe
+```
 
-## Future Improvements
-- Add more game features and mechanics
-- Implement a scoring system
-- Enhance graphics and sound effects
+## Web version
+Uses Emscripten to compile the websembly
+Use cmake to build:
 
-## License
-This project is open-source and available for modification and distribution.
+```
+source /path/to/emsdk/emsdk_env.sh
+emcmake cmake -S . -B build-wasm
+cmake --build build-wasm
+```
+
+Run locally with:
+
+```
+python3 -m http.server 8000
+```
+
+```
+open index.html
+```

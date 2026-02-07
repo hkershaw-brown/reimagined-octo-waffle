@@ -5,8 +5,16 @@ project(CppGameProject)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-include_directories(include)
-
 file(GLOB SOURCES "src/*.cpp")
 
-add_executable(CppGameProject ${SOURCES})
+add_executable(tictactoe ${SOURCES})
+
+# --- Emscripten (WebAssembly/JS) build ---
+if(EMSCRIPTEN)
+  set_target_properties(tictactoe PROPERTIES OUTPUT_NAME "game")
+  target_link_options(tictactoe PRIVATE
+    "SHELL:-s EXPORTED_FUNCTIONS=['_createGame','_destroyGame','_makeMove','_getBoard','_resetGame','_makeComputerMove','_getStatus']"
+    "SHELL:-s EXPORTED_RUNTIME_METHODS=['cwrap','ccall']"
+    "SHELL:-s ENVIRONMENT=web"
+  )
+endif()

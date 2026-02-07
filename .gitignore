@@ -9,7 +9,6 @@
 *.lib
 *.js
 *.wasm
-tic-tac-toe
 
 # CMake
 CMakeFiles/
@@ -22,6 +21,7 @@ Makefile
 /bin/
 /debug/
 /release/
+/build-wasm/
 
 # IDE files
 *.user
