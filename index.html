@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+  <script>
+    var Module = {
+      onRuntimeInitialized: function() {
+        const term = new Terminal();
+        term.open(document.getElementById('terminal'));
+
+        // Wrap exported functions
+        const createGame = Module.cwrap('createGame', 'number', []);
+        const makeMove = Module.cwrap('makeMove', 'bool', ['number', 'number', 'number']);
+        const getBoard = Module.cwrap('getBoard', 'string', ['number']);
+        const resetGame = Module.cwrap('resetGame', null, ['number']);
+        const makeComputerMove = Module.cwrap('makeComputerMove', 'bool', ['number']);
+        const getStatus = Module.cwrap('getStatus', 'string', ['number']);
+
+        // Create a game instance
+        let gamePtr = createGame();
+        resetGame(gamePtr);
+
+        let input = '';
+        let statusMsg = '';
+
+        function renderBoard() {
+          term.clear();
+          term.writeln(getBoard(gamePtr));
+          let status = getStatus(gamePtr) || "";
+          console.log('Status:', status);
+          if (status.length > 0) {
+            term.writeln(status);
+          } else if (statusMsg) {
+            term.writeln(statusMsg);
+            statusMsg = '';
+          }
+          if (status.length === 0) {
+            term.writeln('Enter your move (row,col)');
+            term.write('> ');
+          }
+        }
+
+        //renderBoard();
+        makeComputerMove(gamePtr); // Let the computer play first
+        renderBoard();
+
+        term.onData(e => {
+          if (e === '\r') {
+            term.write('\r');
+            term.write(' '.repeat(input.length + 2));
+            term.write('\r');
+            let parts = input.split(/[ ,]+/);
+            if (parts.length === 2) {
+              let row = parseInt(parts[0]);
+              let col = parseInt(parts[1]);
+              let success = makeMove(gamePtr, row, col);
+              if (!success) {
+                statusMsg = 'Invalid move. Try again.';
+                input = '';
+                renderBoard();
+                return;
+              }
+              input = '';
+              //renderBoard(); // Show the human move first
+
+              // Now let the computer play and show the result
+              makeComputerMove(gamePtr);
+              renderBoard();
+            } else {
+              statusMsg = 'Invalid input. Use: row,col';
+              input = '';
+              renderBoard();
+            }
+          } else if (e === '\u007F') {
+            if (input.length > 0) {
+              input = input.slice(0, -1);
+              term.write('\b \b'); 
+            }
+          } else {
+            input += e;
+            term.write(e); // Echo input as you type
+          }
+        });
+      }
+    };
+  </script>
+  <script src="game.js"></script>
+</head>
+<body>
+  <div id="terminal" style="width:600px;height:300px;"></div>
+</body>
+</html>

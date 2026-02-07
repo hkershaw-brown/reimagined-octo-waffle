@@ -7,6 +7,9 @@
 *.out
 *.a
 *.lib
+*.js
+*.wasm
+tic-tac-toe
 
 # CMake
 CMakeFiles/
