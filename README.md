@@ -1,4 +1,4 @@
-# cpp-game-project
+# tic-tac-toe
 
 ## Overview
 Noughts and crosses (aka tic-tac-toe). C++ and a webassembly version
@@ -11,8 +11,6 @@ cpp-game-project
 │   ├── main.cpp        # Entry point of the game C++
 │   ├── game.cpp        # Implementation of the Game class
 │   └── game.h          # Declaration of the Game class
-├── include
-│   └── utils.h         # Utility functions
 ├── CMakeLists.txt      # Build configuration
 └── README.md           # Project documentation
 ```
